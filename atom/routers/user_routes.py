@@ -15,4 +15,3 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     user = create_new_user(user, db)
     return user
 
-@router.get()
