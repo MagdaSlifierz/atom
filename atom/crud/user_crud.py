@@ -1,18 +1,24 @@
 from sqlalchemy.orm import Session
-from atom.schemas.user_schema import UserCreate
+from atom.schemas.user_schema import UserCreate, ShowUser
 from atom.models.user_model import User
 from atom.core.hashing import Hasher
 
 
 def create_new_user(user: UserCreate, db: Session):
-    user = User(
-        first_name=user.user_first_name,
-        last_name=user.user_last_name,
-        email=user.user_email,
-        password=Hasher.get_password_hash(user.user_password)
+    user1 = User(
+        user_id=user.user_id,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        password=Hasher.get_password_hash(user.password)
 
     )
-    db.add(user)
+    db.add(user1)
     db.commit()
-    db.refresh(user)
-    return user
+    db.refresh(user1)
+    return user1
+
+def get_user(userEmail: ShowUser, db: Session):
+    userEmail = db.query(User).filter(User.email == userEmail).first()
+    return userEmail
+

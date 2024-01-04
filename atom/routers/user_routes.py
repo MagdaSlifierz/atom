@@ -12,5 +12,7 @@ router = APIRouter()
 # UserCreate schema will validate that it has a email in proper format, and a password
 @router.post("/")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    user = create_new_user(user=user, db=db)
+    user = create_new_user(user, db)
     return user
+
+@router.get()
