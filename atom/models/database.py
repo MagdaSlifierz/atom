@@ -12,7 +12,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # declarative_base serves as the base class for declarative models that will be created
-print('creating Base')
+
 Base = declarative_base()
 
 
