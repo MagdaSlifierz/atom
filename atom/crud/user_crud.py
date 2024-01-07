@@ -1,19 +1,28 @@
 from sqlalchemy.orm import Session
 from atom.schemas.user_schema import UserCreate, UserUpdate
 from atom.models.user_model import User
-from atom.core.hashing import Hasher
 from fastapi import HTTPException
 from typing import Optional
+from pydantic import UUID4
 
 
 def create_new_user(user: UserCreate, db: Session):
+    """
+        Create a new user in the database.
+
+        This function takes a UserCreate object and a SQLAlchemy Session, creates a new User
+        entity from the UserCreate data, and saves it to the database.
+
+        Parameters:
+        - user (UserCreate): A Pydantic model containing the data for the new user.
+        - db (Session): The SQLAlchemy session for database operations.
+        Returns:
+        - User: The newly created User entity.
+    """
     user_to_save = User(
-        user_id=user.user_id,
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
-        password=Hasher.get_password_hash(user.password)
-
     )
     db.add(user_to_save)
     db.commit()
@@ -22,16 +31,47 @@ def create_new_user(user: UserCreate, db: Session):
 
 
 def read_all_users(db: Session):
+    """
+       Retrieve all users from the database.
+
+       This function queries the database for all User entities and returns them.
+
+       Parameters:
+       - db (Session): The SQLAlchemy session for database operations.
+
+       Returns:
+       - List[User]: A list of User entities.
+    """
     users = db.query(User).all()
     return users
 
 
-def get_user_by_id(user_id: int, db: Session) -> Optional[User]:
+def get_user_by_id(user_id: UUID4, db: Session) -> Optional[User]:
+    """
+       Retrieve a user by their unique identifier.
+
+       Parameters:
+       - user_id (UUID4): The unique identifier of the user.
+       - db (Session): The SQLAlchemy session for database operations.
+
+       Returns:
+       - User or None: The User entity if found, otherwise None.
+    """
     user = db.query(User).filter(User.user_id == user_id).first()
     return user
 
 
 def get_user_by_email(email: str, db: Session):
+    """
+       Retrieve a user by their email address.
+
+       Parameters:
+       - email (str): The email address of the user.
+       - db (Session): The SQLAlchemy session for database operations.
+
+       Returns:
+       - User or None: The User entity if found, otherwise None.
+    """
     user_email = db.query(User).filter(User.email == email).first()
     return user_email
 
@@ -55,24 +95,49 @@ in existing_user based on the fields present in the UserUpdate object without ex
 '''
 
 
-def update_user(user_id: int, user_update: UserUpdate, db: Session):
+def update_user(user_id: UUID4, user_update: UserUpdate, db: Session):
+    """
+        Update an existing user's information.
+
+        This function updates the information of an existing user based on the provided
+        UserUpdate object. It dynamically updates only the fields that are provided in
+        the UserUpdate object.
+
+        Parameters:
+        - user_id (UUID4): The unique identifier of the user to be updated.
+        - user_update (UserUpdate): A Pydantic model containing the updated user data.
+        - db (Session): The SQLAlchemy session for database operations.
+
+        Returns:
+        - User: The updated User entity.
+    """
     # get the user from the database reuse method get_user_by_id
     existing_user = get_user_by_id(user_id, db)
-    if existing_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
     # existing_user.update(user_update.__dict__)
     # Update user fields with new data
     for field, value in user_update.dict(exclude_unset=True).items():
         # Check if the field is the password and hash it
-        if field == "password":
-            value = Hasher.get_password_hash(value)
+        # if field == "password":
+        #     value = Hasher.get_password_hash(value)
         setattr(existing_user, field, value)
     db.commit()
     db.refresh(existing_user)
     return existing_user
 
 
-def delete_user(user_id: int, db: Session):
+def delete_user(user_id: UUID4, db: Session):
+    """
+       Delete a user from the database.
+
+       This function deletes the user associated with the provided user ID from the database.
+
+       Parameters:
+       - user_id (UUID4): The unique identifier of the user to be deleted.
+       - db (Session): The SQLAlchemy session for database operations.
+
+       Returns:
+       - User or None: The deleted User entity if found and deleted, otherwise None.
+    """
     user_to_delete = get_user_by_id(user_id, db)
     if user_to_delete:
         db.delete(user_to_delete)
