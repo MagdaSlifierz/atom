@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String
 from atom.models.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
+import  uuid
 
 """
     This module Represents a User entity within the database.

@@ -113,13 +113,22 @@ def update_user(user_id: UUID4, user_update: UserUpdate, db: Session):
     """
     # get the user from the database reuse method get_user_by_id
     existing_user = get_user_by_id(user_id, db)
-    # existing_user.update(user_update.__dict__)
     # Update user fields with new data
-    for field, value in user_update.dict(exclude_unset=True).items():
-        # Check if the field is the password and hash it
-        # if field == "password":
-        #     value = Hasher.get_password_hash(value)
-        setattr(existing_user, field, value)
+    # user_data = UserUpdate.model_validate(existing_user)
+    if existing_user is None:
+        # Handle the case where the user doesn't exist
+        # For example, return None or raise an HTTPException
+        raise HTTPException(status_code=404, detail="User not found")
+    # for field, value in user_update.model_dump(exclude_unset=True).items():
+    #     # Check if the field is the password and hash it
+    #     # if field == "password":
+    #     #     value = Hasher.get_password_hash(value)
+    #     if getattr(user_data, field, None) != value:
+    #         setattr(user_data, field, value)
+
+    existing_user.first_name = user_update.first_name,
+    existing_user.last_name = user_update.last_name,
+    existing_user.email = user_update.email,
     db.commit()
     db.refresh(existing_user)
     return existing_user
