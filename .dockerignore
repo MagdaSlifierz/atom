@@ -1,0 +1,6 @@
+# Ignore directory migrations alembic
+
+/alembic
+
+# Ignore test.db file
+test.db
