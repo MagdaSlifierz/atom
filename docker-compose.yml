@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  database:
+    container_name: "database"
+    image: "postgres:latest"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    networks:
+      - atom-network
+
+  app:
+    container_name: "app"
+    depends_on:
+      - database
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_SERVER=database
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+    image: magdaimage
+    networks:
+      - atom-network
+    ports:
+      - "8000:8000"
+
+networks:
+  atom-network:
+    driver: bridge
+    name: atom-network
