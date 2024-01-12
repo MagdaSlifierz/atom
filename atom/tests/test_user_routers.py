@@ -24,13 +24,13 @@ def test_create_user(test_app):
 
 def test_all_users(test_app):
     """
-       Test the endpoint to get all users.
+    Test the endpoint to get all users.
 
-       This test ensures that the endpoint for retrieving all users is functioning correctly.
-       It sends a GET request to the '/user/all' route and checks that the response status is 200 (OK)
-       and the response content is a list, which should contain the user data in JSON format.
+    This test ensures that the endpoint for retrieving all users is functioning correctly.
+    It sends a GET request to the '/user/all' route and checks that the response status is 200 (OK)
+    and the response content is a list, which should contain the user data in JSON format.
     """
-    response = test_app.get('/user/all')
+    response = test_app.get("/user/all")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
@@ -51,12 +51,12 @@ def test_get_user_by_id(test_app):
 
 def test_update_user_by_id(test_app):
     """
-        Test the endpoint to update a user by ID.
+    Test the endpoint to update a user by ID.
 
-        This test sends a PUT request to the '/user/update/{user_id}' route with a known user ID and new user data.
-        The test asserts that the response status is 200 and the updated information in the response matches
-        the data sent in the request.
-        """
+    This test sends a PUT request to the '/user/update/{user_id}' route with a known user ID and new user data.
+    The test asserts that the response status is 200 and the updated information in the response matches
+    the data sent in the request.
+    """
     user_id = "45d15acb-f18d-47cf-a6a1-b4b7c7e72b3c"
     data = {"first_name": "Diana", "last_name": "Kurk", "email": "kurk@example.com"}
     response = test_app.put(f"/user/update/{user_id}", json=data)
@@ -72,11 +72,11 @@ def test_update_user_by_id(test_app):
 
 def test_delete_user_by_id(test_app):
     """
-        Test the endpoint to delete a user by ID.
+    Test the endpoint to delete a user by ID.
 
-        This test ensures the functionality of the endpoint for deleting a user based on their user ID.
-        It sends a DELETE request to the '/user/delete/{user_id}' route and checks that the response status
-        is 200 and the response message confirms successful deletion of the user.
+    This test ensures the functionality of the endpoint for deleting a user based on their user ID.
+    It sends a DELETE request to the '/user/delete/{user_id}' route and checks that the response status
+    is 200 and the response message confirms successful deletion of the user.
     """
     user_id = "c96cb6d0-1dc7-4592-8cce-9f55555b1407"
     response = test_app.delete(f"/user/delete/{user_id}")
