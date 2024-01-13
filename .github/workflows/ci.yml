@@ -19,11 +19,19 @@ jobs:
           python-version: "3.11"
 
       - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+                - name: Setup a local virtual environment (if no poetry.toml file)
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+              poetry config virtualenvs.create true --local
+              poetry config virtualenvs.in-project true --local
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+                path: ./.venv
+                key: venv-${{ hashFiles('poetry.lock') }}
 
       - name: Install all dependencies
         run :  |
           poetry install
-
+      - name: Run the automated tests (for example)
+        run: poetry run pytest -v
