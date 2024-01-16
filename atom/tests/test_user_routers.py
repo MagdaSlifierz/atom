@@ -26,11 +26,15 @@ from atom.tests.conftest import test_app
 #     assert response.json()["email"] == "paulina.ewa@gmail.com"
 def test_get_user_by_id(test_app):
     # Create a new user
-    new_user_data = {"first_name": "Test", "last_name": "User", "email": "test.user@example.com"}
+    new_user_data = {
+        "first_name": "Test",
+        "last_name": "User",
+        "email": "test.user@example.com",
+    }
     create_response = test_app.post("/", json=new_user_data)
     assert create_response.status_code == 200, "Failed to create user"
     created_user = create_response.json()
-    user_id = created_user['user_id']  # Assuming 'id' is the key in the response
+    user_id = created_user["user_id"]  # Assuming 'id' is the key in the response
 
     # Test getting the user by ID
     get_response = test_app.get(f"/user/{user_id}")
@@ -41,6 +45,7 @@ def test_get_user_by_id(test_app):
     # Optionally delete the user after test
     delete_response = test_app.delete(f"/user/delete/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
+
 
 #
 # def test_all_users(test_app):
