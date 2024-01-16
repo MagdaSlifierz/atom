@@ -13,13 +13,18 @@ def test_create_user(test_app):
     The test asserts that the response status code is 200 (OK) and the response JSON matches the data sent in the request.
     """
     # create data later convert to json
-    data = {"first_name": "Paulina", "last_name": "Jurek", "email": "paulina.ewa@gmail.com"}
+    data = {
+        "first_name": "Paulina",
+        "last_name": "Jurek",
+        "email": "paulina.ewa@gmail.com",
+    }
     # I have to hit this endpoint from routers
     response = test_app.post("/", json=data)
     assert response.status_code == 200
     assert response.json()["first_name"] == "Paulina"
     assert response.json()["last_name"] == "Jurek"
     assert response.json()["email"] == "paulina.ewa@gmail.com"
+
 
 #
 # def test_all_users(test_app):

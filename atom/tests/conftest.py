@@ -34,6 +34,7 @@ def test_app():
     client = TestClient(app)
     yield client
 
+
 # @pytest.fixture(scope="module")
 # def test_app():
 #     client = TestClient(app)

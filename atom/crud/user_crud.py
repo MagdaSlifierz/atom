@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from typing import Optional
 
 
-
 def create_new_user(user: UserCreate, db: Session):
     """
     Create a new user in the database.
