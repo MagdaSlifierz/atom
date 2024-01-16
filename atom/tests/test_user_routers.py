@@ -87,3 +87,18 @@ def test_create_user(test_app):
 #     response = test_app.delete(f"/user/delete/{user_id}")
 #     assert response.status_code == 200
 #     assert response.json()["message"] == "User was successfully deleted"
+def test_get_user_by_id(test_app):
+    # Create a new user
+    new_user_data = {"first_name": "Test", "last_name": "User", "email": "test.user@example.com"}
+    response = test_app.post("/user/create", json=new_user_data)
+    assert response.status_code == 200
+    created_user = response.json()
+    user_id = created_user['id']  # Get the ID of the newly created user
+
+    # Test getting the user by ID
+    response = test_app.get(f"/user/{user_id}")
+    assert response.status_code == 200
+    assert response.json()["user_id"] == user_id
+
+    # Optionally delete the user after test
+    test_app.delete(f"/user/delete/{user_id}")
