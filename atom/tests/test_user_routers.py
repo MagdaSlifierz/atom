@@ -13,13 +13,13 @@ def test_create_user(test_app):
     The test asserts that the response status code is 200 (OK) and the response JSON matches the data sent in the request.
     """
     # create data later convert to json
-    data = {"first_name": "Ewa", "last_name": "Plusa", "email": "plusa.kasia@gmail.com"}
+    data = {"first_name": "Paulina", "last_name": "Jurek", "email": "paulina.ewa@gmail.com"}
     # I have to hit this endpoint from routers
     response = test_app.post("/", json=data)
     assert response.status_code == 200
-    assert response.json()["first_name"] == "Ewa"
-    assert response.json()["last_name"] == "Plusa"
-    assert response.json()["email"] == "plusa.kasia@gmail.com"
+    assert response.json()["first_name"] == "Paulina"
+    assert response.json()["last_name"] == "Jurek"
+    assert response.json()["email"] == "paulina.ewa@gmail.com"
 
 
 def test_all_users(test_app):
@@ -40,7 +40,7 @@ def test_get_user_by_id(test_app):
     Test the endpoint to get a user by ID.
     This test checks the functionality of the endpoint for retrieving a specific user by their user ID.
     """
-    user_id = "c96cb6d0-1dc7-4592-8cce-9f55555b1407"
+    user_id = "d4f610a4-b484-435c-9b64-5ae216f887b3"
     response = test_app.get(f"/user/{user_id}")
     assert response.status_code == 200
     assert response.json()["user_id"] == user_id
@@ -57,17 +57,17 @@ def test_update_user_by_id(test_app):
     The test asserts that the response status is 200 and the updated information in the response matches
     the data sent in the request.
     """
-    user_id = "45d15acb-f18d-47cf-a6a1-b4b7c7e72b3c"
-    data = {"first_name": "Diana", "last_name": "Kurk", "email": "kurk@example.com"}
+    user_id = "d4f610a4-b484-435c-9b64-5ae216f887b3"
+    data = {"first_name": "Karol", "last_name": "Kielc", "email": "kielc@example.com"}
     response = test_app.put(f"/user/update/{user_id}", json=data)
     print(response.text)
     assert response.status_code == 200
-    assert response.json()["first_name"] == "Diana"
-    assert response.json()["last_name"] == "Kurk"
-    assert response.json()["email"] == "kurk@example.com"
+    assert response.json()["first_name"] == "Karol"
+    assert response.json()["last_name"] == "Kielc"
+    assert response.json()["email"] == "kielc@example.com"
     #
-    # response = test_app.put("/user/update/dd088a45-8c56-45c2-8ff8-c42a88580d8b", json=data)
-    # assert response.status_code == 404
+    response = test_app.put("/user/update/dd088a45-8c56-45c2-8ff8-c42a88580d8b", json=data)
+    assert response.status_code == 404
 
 
 def test_delete_user_by_id(test_app):
@@ -78,7 +78,7 @@ def test_delete_user_by_id(test_app):
     It sends a DELETE request to the '/user/delete/{user_id}' route and checks that the response status
     is 200 and the response message confirms successful deletion of the user.
     """
-    user_id = "c96cb6d0-1dc7-4592-8cce-9f55555b1407"
+    user_id = "bca47c75-6418-4f5d-ae2c-6871b7714100"
     response = test_app.delete(f"/user/delete/{user_id}")
     assert response.status_code == 200
     assert response.json()["message"] == "User was successfully deleted"
