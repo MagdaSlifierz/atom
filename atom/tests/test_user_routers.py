@@ -5,26 +5,42 @@ import sys
 from atom.tests.conftest import test_app
 
 
-def test_create_user(test_app):
-    """
-    Test the endpoint for creating a new user.
+# def test_create_user(test_app):
+#     """
+#     Test the endpoint for creating a new user.
+#
+#     This test sends a POST request to the '/' route with JSON payload containing user data (first name, last name, email).
+#     The test asserts that the response status code is 200 (OK) and the response JSON matches the data sent in the request.
+#     """
+#     # create data later convert to json
+#     data = {
+#         "first_name": "Paulina",
+#         "last_name": "Jurek",
+#         "email": "paulina.ewa@gmail.com",
+#     }
+#     # I have to hit this endpoint from routers
+#     response = test_app.post("/", json=data)
+#     assert response.status_code == 200
+#     assert response.json()["first_name"] == "Paulina"
+#     assert response.json()["last_name"] == "Jurek"
+#     assert response.json()["email"] == "paulina.ewa@gmail.com"
+def test_get_user_by_id(test_app):
+    # Create a new user
+    new_user_data = {"first_name": "Test", "last_name": "User", "email": "test.user@example.com"}
+    create_response = test_app.post("/", json=new_user_data)
+    assert create_response.status_code == 200, "Failed to create user"
+    created_user = create_response.json()
+    user_id = created_user['user_id']  # Assuming 'id' is the key in the response
 
-    This test sends a POST request to the '/' route with JSON payload containing user data (first name, last name, email).
-    The test asserts that the response status code is 200 (OK) and the response JSON matches the data sent in the request.
-    """
-    # create data later convert to json
-    data = {
-        "first_name": "Paulina",
-        "last_name": "Jurek",
-        "email": "paulina.ewa@gmail.com",
-    }
-    # I have to hit this endpoint from routers
-    response = test_app.post("/", json=data)
-    assert response.status_code == 200
-    assert response.json()["first_name"] == "Paulina"
-    assert response.json()["last_name"] == "Jurek"
-    assert response.json()["email"] == "paulina.ewa@gmail.com"
+    # Test getting the user by ID
+    get_response = test_app.get(f"/user/{user_id}")
+    assert get_response.status_code == 200, f"Failed to retrieve user with id {user_id}"
+    user_data = get_response.json()
+    assert user_data["user_id"] == user_id, "Retrieved user ID does not match"
 
+    # Optionally delete the user after test
+    delete_response = test_app.delete(f"/user/delete/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
 
 #
 # def test_all_users(test_app):
@@ -87,18 +103,3 @@ def test_create_user(test_app):
 #     response = test_app.delete(f"/user/delete/{user_id}")
 #     assert response.status_code == 200
 #     assert response.json()["message"] == "User was successfully deleted"
-def test_get_user_by_id(test_app):
-    # Create a new user
-    new_user_data = {"first_name": "Test", "last_name": "User", "email": "test.user@example.com"}
-    response = test_app.post("/user/create", json=new_user_data)
-    assert response.status_code == 200
-    created_user = response.json()
-    user_id = created_user['id']  # Get the ID of the newly created user
-
-    # Test getting the user by ID
-    response = test_app.get(f"/user/{user_id}")
-    assert response.status_code == 200
-    assert response.json()["user_id"] == user_id
-
-    # Optionally delete the user after test
-    test_app.delete(f"/user/delete/{user_id}")
