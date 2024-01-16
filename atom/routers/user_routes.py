@@ -11,7 +11,6 @@ from atom.crud.user_crud import (
     delete_user,
 )
 from typing import List
-from pydantic import UUID4
 
 """
     This module defines the routing for user-related operations in the application.
@@ -55,7 +54,7 @@ def get_all_users(db: Session = Depends(get_db)):
 
 
 @router.get("/user/{user_id}")
-def get_user(user_id: UUID4, db: Session = Depends(get_db)):
+def get_user(user_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a specific user by their user ID.
 
@@ -75,7 +74,7 @@ def get_user(user_id: UUID4, db: Session = Depends(get_db)):
 
 @router.put("/user/update/{user_id}")
 def update_user_by_id(
-    user_id: UUID4, user_update: UserUpdate, db: Session = Depends(get_db)
+    user_id: str, user_update: UserUpdate, db: Session = Depends(get_db)
 ):
     """
     Update an existing user's information.
@@ -98,7 +97,7 @@ def update_user_by_id(
 
 
 @router.delete("/user/delete/{user_id}")
-def delete_user_by_id(user_id: UUID4, db: Session = Depends(get_db)):
+def delete_user_by_id(user_id: str, db: Session = Depends(get_db)):
     """
     Delete an existing user's information.
 

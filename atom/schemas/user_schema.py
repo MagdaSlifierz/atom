@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, UUID4
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 """
@@ -31,7 +31,7 @@ class ShowUser(BaseModel):
     facilitating the serialization and validation of data coming from the database
     """
 
-    user_id: UUID4
+    user_id: str
     first_name: str
     last_name: str
     email: EmailStr

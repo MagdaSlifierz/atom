@@ -3,7 +3,7 @@ from atom.schemas.user_schema import UserCreate, UserUpdate
 from atom.models.user_model import User
 from fastapi import HTTPException
 from typing import Optional
-from pydantic import UUID4
+
 
 
 def create_new_user(user: UserCreate, db: Session):
@@ -46,7 +46,7 @@ def read_all_users(db: Session):
     return users
 
 
-def get_user_by_id(user_id: UUID4, db: Session) -> Optional[User]:
+def get_user_by_id(user_id: str, db: Session) -> Optional[User]:
     """
     Retrieve a user by their unique identifier.
 
@@ -95,7 +95,7 @@ in existing_user based on the fields present in the UserUpdate object without ex
 """
 
 
-def update_user(user_id: UUID4, user_update: UserUpdate, db: Session):
+def update_user(user_id: str, user_update: UserUpdate, db: Session):
     """
     Update an existing user's information.
 
@@ -134,7 +134,7 @@ def update_user(user_id: UUID4, user_update: UserUpdate, db: Session):
     return existing_user
 
 
-def delete_user(user_id: UUID4, db: Session):
+def delete_user(user_id: str, db: Session):
     """
     Delete a user from the database.
 
