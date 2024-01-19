@@ -7,7 +7,7 @@ import datetime
 
 
 def get_all_todos_by_owner(user_id: str, db: Session):
-    items = (db.query(Todo).filter(Todo.owner_id == user_id).all())
+    items = db.query(Todo).filter(Todo.owner_id == user_id).all()
     return items
 
 
@@ -28,13 +28,19 @@ def create_todo_by_owner(item_data: ToDoCreate, db: Session):
 
 
 def get_todo_item_and_owner(user_id: str, todo_id: str, db: Session):
-    item_owner = db.query(Todo).filter(Todo.owner_id == user_id, Todo.todo_id == todo_id).first()
+    item_owner = (
+        db.query(Todo).filter(Todo.owner_id == user_id, Todo.todo_id == todo_id).first()
+    )
     return item_owner
 
 
-def update_todo_item_by_owner(user_id: str, todo_id: str, item_data: ToDoUpdate, db: Session):
+def update_todo_item_by_owner(
+    user_id: str, todo_id: str, item_data: ToDoUpdate, db: Session
+):
     # take the task with specific id and check with the user id
-    todo_item = db.query(Todo).filter(Todo.todo_id == todo_id, Todo.owner_id == user_id).first()
+    todo_item = (
+        db.query(Todo).filter(Todo.todo_id == todo_id, Todo.owner_id == user_id).first()
+    )
     if not todo_item:
         return None
 

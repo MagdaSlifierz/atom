@@ -11,8 +11,11 @@ from atom.tests.test_user_routers import create_user, get_user_by_id
 # execut response client
 # veryfication
 
+
 def test_create_todo_item_by_user(test_app):
-    create_user_for_todo = create_user(test_app, "Eliza", "Rawelec", "eliza@gmail.com")
+    create_user_for_todo = create_user(
+        test_app, "Karolina", "Rawelec", "raweleca@gmail.com"
+    )
     assert create_user_for_todo.status_code == 200, "failed to create user"
     created_user_for_todo = create_user_for_todo.json()
 
@@ -22,7 +25,7 @@ def test_create_todo_item_by_user(test_app):
 
     # create todo_item
     todo_item_data = {
-        "todo_name": "Climbing",
+        "todo_name": "Dishes",
         "owner_id": user_id,
         "todo_done_or_not": False,
     }
@@ -32,6 +35,6 @@ def test_create_todo_item_by_user(test_app):
         print(response.json())
     # veryfication
     assert response.status_code == 200
-    assert response.json()["todo_name"] == "Climbing"
+    assert response.json()["todo_name"] == "Dishes"
     assert response.json()["owner_id"] == user_id
     assert response.json()["todo_done_or_not"] is False
