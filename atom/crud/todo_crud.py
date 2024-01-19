@@ -5,9 +5,12 @@ from atom.schemas.todo_schema import ToDoCreate, ToDoUpdate
 from datetime import datetime
 import datetime
 
+
 def get_all_todos_by_owner(user_id: str, db: Session):
     items = (db.query(Todo).filter(Todo.owner_id == user_id).all())
     return items
+
+
 # def get
 
 
@@ -24,7 +27,12 @@ def create_todo_by_owner(item_data: ToDoCreate, db: Session):
     return new_item
 
 
-def update_todo_item_by_owner(user_id: str, todo_id: str, item_data: ToDoUpdate,  db: Session):
+def get_todo_item_and_owner(user_id: str, todo_id: str, db: Session):
+    item_owner = db.query(Todo).filter(Todo.owner_id == user_id, Todo.todo_id == todo_id).first()
+    return item_owner
+
+
+def update_todo_item_by_owner(user_id: str, todo_id: str, item_data: ToDoUpdate, db: Session):
     # take the task with specific id and check with the user id
     todo_item = db.query(Todo).filter(Todo.todo_id == todo_id, Todo.owner_id == user_id).first()
     if not todo_item:
@@ -38,3 +46,11 @@ def update_todo_item_by_owner(user_id: str, todo_id: str, item_data: ToDoUpdate,
     todo_item.todo_updated_at = datetime.datetime.now()
     db.commit()
     return todo_item
+
+
+def delete_todo_item_by_owner(user_id: str, todo_id: str, db: Session):
+    todo_item_do_delete = get_todo_item_and_owner(user_id, todo_id, db)
+    if todo_item_do_delete:
+        db.delete(todo_item_do_delete)
+        db.commit()
+    return todo_item_do_delete
