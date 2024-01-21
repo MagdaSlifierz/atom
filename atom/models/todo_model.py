@@ -4,8 +4,20 @@ from datetime import datetime
 from sqlalchemy.orm import relationship
 import uuid
 
+"""
+    This module Represents a Todo entity within the database.
+"""
+
 
 class Todo(Base):
+    """
+    Todo item entity model representing a todo item in the database.
+    Attributes include todo ID, todo name, if item was done or not, time of creating and updating as well as connection
+    to relationship with the user
+
+    The table name is set to 'todos'
+    """
+
     __tablename__ = "todos"
 
     todo_id = Column(
