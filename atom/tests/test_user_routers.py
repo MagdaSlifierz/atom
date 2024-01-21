@@ -55,7 +55,7 @@ def test_create_user(test_app):
 def test_update_user_by_id(test_app):
     # Create a new user
     create_user_response = create_user(
-        test_app, "Joanna", "Widelec", "widelec@gmail.com"
+        test_app, "Joanna", "Skiba", "skibajoanna@gmail.com"
     )
     assert create_user_response.status_code == 200, "Fail do create user"
     created_user = create_user_response.json()
@@ -66,22 +66,22 @@ def test_update_user_by_id(test_app):
     # Update the user
     updated_data = {
         "first_name": "Joanna",
-        "last_name": "Widelec",
-        "email": "widelec_joanna@gmail.com",
+        "last_name": "Skiba",
+        "email": "skibajoanna@gmail.com",
     }
     update_response = test_app.put(f"/user/update/{user_id}", json=updated_data)
     assert update_response.status_code == 200
     # Assert updated data
 
     assert update_response.json()["first_name"] == "Joanna"
-    assert update_response.json()["last_name"] == "Widelec"
-    assert update_response.json()["email"] == "widelec_joanna@gmail.com"
+    assert update_response.json()["last_name"] == "Skiba"
+    assert update_response.json()["email"] == "skibajoanna@gmail.com"
 
     test_app.delete(f"/user/delete/{user_id}")
 
 
 def test_delete_user_by_id(test_app):
-    create_response = create_user(test_app, "Ola", "Nowak", "nowak@gmail.com")
+    create_response = create_user(test_app, "Ola", "Zerek", "zerek@gmail.com")
     assert create_response.status_code == 200, "Failed to create user"
     created_user = create_response.json()
     user_id = created_user["user_id"]  # Assuming 'id' is the key in the response
@@ -102,55 +102,3 @@ def test_all_users(test_app):
     response = test_app.get("/user/all")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
-
-
-#
-#
-#
-# def test_get_user_by_id(test_app):
-#     """
-#     Test the endpoint to get a user by ID.
-#     This test checks the functionality of the endpoint for retrieving a specific user by their user ID.
-#     """
-#     user_id = "d4f610a4-b484-435c-9b64-5ae216f887b3"
-#     response = test_app.get(f"/user/{user_id}")
-#     assert response.status_code == 200
-#     assert response.json()["user_id"] == user_id
-#     # Test for non-existent user
-#     response = test_app.get("/user/cc088a45-8c56-45c2-8ff8-c42a88580d8b")
-#     assert response.status_code == 404
-#
-#
-# def test_update_user_by_id(test_app):
-#     """
-#     Test the endpoint to update a user by ID.
-#
-#     This test sends a PUT request to the '/user/update/{user_id}' route with a known user ID and new user data.
-#     The test asserts that the response status is 200 and the updated information in the response matches
-#     the data sent in the request.
-#     """
-#     user_id = "d4f610a4-b484-435c-9b64-5ae216f887b3"
-#     data = {"first_name": "Karol", "last_name": "Kielc", "email": "kielc@example.com"}
-#     response = test_app.put(f"/user/update/{user_id}", json=data)
-#     print(response.text)
-#     assert response.status_code == 200
-#     assert response.json()["first_name"] == "Karol"
-#     assert response.json()["last_name"] == "Kielc"
-#     assert response.json()["email"] == "kielc@example.com"
-#     #
-#     response = test_app.put("/user/update/dd088a45-8c56-45c2-8ff8-c42a88580d8b", json=data)
-#     assert response.status_code == 404
-#
-#
-# def test_delete_user_by_id(test_app):
-#     """
-#     Test the endpoint to delete a user by ID.
-#
-#     This test ensures the functionality of the endpoint for deleting a user based on their user ID.
-#     It sends a DELETE request to the '/user/delete/{user_id}' route and checks that the response status
-#     is 200 and the response message confirms successful deletion of the user.
-#     """
-#     user_id = "bca47c75-6418-4f5d-ae2c-6871b7714100"
-#     response = test_app.delete(f"/user/delete/{user_id}")
-#     assert response.status_code == 200
-#     assert response.json()["message"] == "User was successfully deleted"

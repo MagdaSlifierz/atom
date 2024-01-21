@@ -44,7 +44,7 @@ def update_user_todo_item(
         return HTTPException(
             status_code=404, detail="Task not found or not owned by user"
         )
-    return {"message": "Task was successfully updated"}
+    return updated_todo_item
 
 
 @router.delete("/users/{user_id}/todos/{todo_id}")
