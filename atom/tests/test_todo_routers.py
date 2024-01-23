@@ -13,6 +13,12 @@ from atom.tests.test_user_routers import create_user, get_user_by_id
 def create_user_and_todo(
     test_app, first_name, last_name, email, todo_name, todo_done_or_not
 ):
+    """
+    Helper function to create a user and associate created item to the user .
+
+    :param test_app: The test client instance.
+    :return: The user_id, and response from the creation request of todo item.
+    """
     create_user_for_todo = create_user(test_app, first_name, last_name, email)
     assert create_user_for_todo.status_code == 200, "failed to create user"
     created_user_for_todo = create_user_for_todo.json()
@@ -31,6 +37,12 @@ def create_user_and_todo(
 
 
 def test_read_users_todo(test_app):
+    """
+    This is endpoint to test the items that the user has created it. This test send the get response to route
+    /users/{user_id}/todos and check the response 200 as well as the response content the list that has a daita in JSON format
+
+    """
+
     user_id, _ = create_user_and_todo(
         test_app, "Paulina", "Nowakowska", "nowakowska@gmail.com", "gardening", False
     )
@@ -44,6 +56,14 @@ def test_read_users_todo(test_app):
 
 def test_read_todo_item_by_user(test_app):
     # test create user and create the todo item
+    """
+    This is endpoint to test the specific item that the user has created it.
+    This test function perform steps:
+    1. creates a new user and todo item associate with the user
+    2. sends the get request to the endpoint ("/users/{user_id}/todos/{todo_id}")
+    3. verifies that the status code is 200 and that the response content matches the expected data format
+
+    """
     user_id, todo_create = create_user_and_todo(
         test_app, "Anna", "Krolewska", "krolewska@gmail.com", "drinking a water", False
     )
@@ -57,6 +77,11 @@ def test_read_todo_item_by_user(test_app):
 
 
 def test_create_todo_item_by_user(test_app):
+    """
+    This is a test to create todo item by a user.
+    The test first create the user as well as todo item, next it checks if the response status of created todo is correct
+
+    """
     user_id, created_todo_response = create_user_and_todo(
         test_app, "Maria", "Dunalewicz", "dunalewicz@gmail.com", "go to the gym", False
     )
@@ -69,6 +94,12 @@ def test_create_todo_item_by_user(test_app):
 
 
 def test_update_todo_item_by_user(test_app):
+    """
+    This is a test to update a specific todo item created by user
+    First the new user and todo item is created, and the response status is checked.
+    Next the response is convert into JSON format and  sent request put to the endpoint;
+    The response status is verified to be 200 and at the end the user and todo item is being deleted
+    """
     user_id, todo_response = create_user_and_todo(
         test_app, "Danuta", "Polaczek", "dpolaczek00@gmail.com", "cooking", False
     )
@@ -102,6 +133,14 @@ def test_update_todo_item_by_user(test_app):
 
 def test_delete_todo_item_by_user(test_app):
     # First create the user and todo
+    """
+    Test the deletion of a specific todo item created by a user.
+
+    This test function ensures that a todo item can be deleted successfully by:
+    1. Creating a new user and associated todo item.
+    2. Sending a DELETE request to the endpoint '/users/{user_id}/todos/{todo_id}'.
+    3. Verifying that the response status code is 200, indicating successful deletion.
+    """
     user_id, todo_response = create_user_and_todo(
         test_app, "Karol", "Wolowski", "wolowski12443@gmail.com", "driving", False
     )

@@ -53,6 +53,12 @@ def test_create_user(test_app):
 
 
 def test_update_user_by_id(test_app):
+    """
+    Test the endpoint for updating user.
+
+    This test sends a PUT request to the '/user/update/{user_id}' route with JSON payload containing user data (first name, last name, email).
+    The test asserts that the response status code is 200 (OK) and the response JSON matches the data sent in the request.
+    """
     # Create a new user
     create_user_response = create_user(
         test_app, "Joanna", "Skiba", "skibajoanna@gmail.com"
@@ -81,6 +87,13 @@ def test_update_user_by_id(test_app):
 
 
 def test_delete_user_by_id(test_app):
+    """
+    This is a test to delete the user
+    Firstly the user has been created and the response status has been checked
+    Next the user data has been convert to json type
+    The  deleted request to the endpoint /user/delete/{user_id} was sent and is checked if
+    the response status code is 200, indicating successful deletion.
+    """
     create_response = create_user(test_app, "Ola", "Zerek", "zerek@gmail.com")
     assert create_response.status_code == 200, "Failed to create user"
     created_user = create_response.json()
