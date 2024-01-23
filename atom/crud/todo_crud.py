@@ -11,9 +11,6 @@ def get_all_todos_by_owner(user_id: str, db: Session):
     return items
 
 
-# def get
-
-
 def create_todo_by_owner(item_data: ToDoCreate, db: Session):
     # check if the user exists
     user = db.query(User).filter(User.user_id == item_data.owner_id).first()
