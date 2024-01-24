@@ -14,7 +14,8 @@ def get_all_todos_by_owner(user_id: str, db: Session):
     :param db: db session instance from database interactions
     :return: a list of todo model instances representing todo item belonging to the specific user
     """
-    items = db.query(Todo).filter(Todo.owner_id == user_id).all()
+    user = db.query(User).filter(User.user_id == user_id).first()
+    items = db.query(Todo).filter(Todo.owner_id == user.id).all()
     return items
 
 
@@ -32,7 +33,7 @@ def create_todo_by_owner(item_data: ToDoCreate, db: Session):
     if not user:
         return None
 
-    new_item = Todo(todo_name=item_data.todo_name, owner_id=item_data.owner_id)
+    new_item = Todo(todo_name=item_data.todo_name, owner_id=user.id)
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
@@ -49,8 +50,9 @@ def get_todo_item_and_owner(user_id: str, todo_id: str, db: Session):
      Returns:
         A Todo model instance representing the requested todo item if found, or None otherwise.
     """
+    user = db.query(User).filter(User.user_id == user_id).first()
     item_owner = (
-        db.query(Todo).filter(Todo.owner_id == user_id, Todo.todo_id == todo_id).first()
+        db.query(Todo).filter(Todo.owner_id == user.id, Todo.todo_id == todo_id).first()
     )
     return item_owner
 
@@ -74,8 +76,9 @@ def update_todo_item_by_owner(
     """
 
     # take the task with specific id and check with the user id
+    user = db.query(User).filter(User.user_id == user_id).first()
     todo_item = (
-        db.query(Todo).filter(Todo.todo_id == todo_id, Todo.owner_id == user_id).first()
+        db.query(Todo).filter(Todo.todo_id == todo_id, Todo.owner_id == user.id).first()
     )
     if not todo_item:
         return None

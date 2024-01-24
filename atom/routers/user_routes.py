@@ -19,12 +19,11 @@ from typing import List
 router = APIRouter()
 
 
-# UserCreate schema will validate that it has a email in proper format, and a password
-@router.post("/")
+# UserCreate schema will validate that if it has email in proper format
+@router.post("/api/v1/users", response_model=ShowUser)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     Create a new user in the system.
-
     This endpoint takes user data, creates a new user record in the database,
     and returns the created user information.
 
@@ -34,11 +33,11 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     Returns:
     - A JSON representation of the created user.
     """
-    user = create_new_user(user, db)
-    return user
+    new_user = create_new_user(user, db)
+    return new_user
 
 
-@router.get("/user/all", response_model=List[ShowUser])
+@router.get("/api/v1/users/all", response_model=List[ShowUser])
 def get_all_users(db: Session = Depends(get_db)):
     """
     Retrieve a list of all users.
@@ -49,11 +48,11 @@ def get_all_users(db: Session = Depends(get_db)):
     Returns:
     - A list of users, ech represented as a JSON object.
     """
-    user_all = read_all_users(db)
-    return user_all
+    all_users = read_all_users(db)
+    return list(all_users)
 
 
-@router.get("/user/{user_id}")
+@router.get("/api/v1/users/{user_id}", response_model=ShowUser)
 def get_user(user_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a specific user by their user ID.
@@ -72,7 +71,7 @@ def get_user(user_id: str, db: Session = Depends(get_db)):
     return user
 
 
-@router.put("/user/update/{user_id}")
+@router.put("/api/v1/users/{user_id}")
 def update_user_by_id(
     user_id: str, user_update: UserUpdate, db: Session = Depends(get_db)
 ):
@@ -90,13 +89,13 @@ def update_user_by_id(
     Raises:
     - HTTPException: 404 error if the user to update is not found.
     """
-    updated_user = update_user(user_id, user_update, db)
-    if updated_user is None:
+    user_to_update = update_user(user_id, user_update, db)
+    if user_to_update is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return updated_user
+    return user_to_update
 
 
-@router.delete("/user/delete/{user_id}")
+@router.delete("/api/v1/users/{user_id}")
 def delete_user_by_id(user_id: str, db: Session = Depends(get_db)):
     """
     Delete an existing user's information.
@@ -114,6 +113,6 @@ def delete_user_by_id(user_id: str, db: Session = Depends(get_db)):
     - HTTPException: 404 error if the user to delete is not found.
     """
     user_to_delete = delete_user(user_id, db)
-    if not user_to_delete:
+    if user_to_delete is None:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User was successfully deleted"}

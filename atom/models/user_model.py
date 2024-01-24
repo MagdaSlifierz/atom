@@ -1,9 +1,6 @@
-import uuid
-
 from sqlalchemy import Column, Integer, String
 from atom.models.database import Base
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
 """
@@ -14,14 +11,15 @@ import uuid
 class User(Base):
     """
     User entity model representing a user in the database.
-    Attributes include user ID, first name, last name, email.
+    Attributes include ID, user ID, first name, last name, email.
+    This table has a relationship one user to many todos
+    When user is deleted all todo items associate with the user are deleted
     The table name is set to 'users'
     """
 
     __tablename__ = "users"
-    user_id = Column(
-        String, primary_key=True, nullable=False, default=lambda: str(uuid.uuid4())
-    )
+    id = Column(Integer, nullable=False, primary_key=True)
+    unique_user_id = Column(String, nullable=False, default=lambda: str(uuid.uuid4()))
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)

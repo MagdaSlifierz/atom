@@ -56,7 +56,7 @@ def get_user_by_id(user_id: str, db: Session) -> Optional[User]:
     Returns:
     - User or None: The User entity if found, otherwise None.
     """
-    user = db.query(User).filter(User.user_id == user_id).first()
+    user = db.query(User).filter(User.unique_user_id == user_id).first()
     return user
 
 
@@ -73,25 +73,6 @@ def get_user_by_email(email: str, db: Session):
     """
     user_email = db.query(User).filter(User.email == email).first()
     return user_email
-
-
-"""
-1. user_update.__dict__:
-
-__dict__ is a special attribute in Python that returns a dictionary containing the attributes and values of an object.
-user_update.__dict__ returns a dictionary representation of the attributes of the UserUpdate object.
-The purpose of using __dict__ here is to dynamically iterate over the fields of the UserUpdate object without explicitly 
-knowing them.
-2. getattr and setattr:
-
-getattr(object, attribute) is a built-in Python function that gets the value of the named attribute from the object.
-setattr(object, attribute, value) is a built-in Python function that sets the value of the named attribute on the object.
-In the context of the code, field is a string representing the attribute name, and getattr(user_update, field) gets the 
-current value of the attribute from the UserUpdate object.
-setattr(existing_user, field, value) sets the corresponding attribute in the existing_user object with the new value.
-The overall purpose of this approach is to create a flexible and dynamic update mechanism. It allows you to update fields 
-in existing_user based on the fields present in the UserUpdate object without explicitly listing each field in the code. This can be particularly useful when dealing with a large number of fields or when the fields can change dynamically.
-"""
 
 
 def update_user(user_id: str, user_update: UserUpdate, db: Session):
@@ -111,26 +92,18 @@ def update_user(user_id: str, user_update: UserUpdate, db: Session):
     - User: The updated User entity.
     """
     # get the user from the database reuse method get_user_by_id
-    existing_user = get_user_by_id(user_id, db)
+    existing_user_to_update = get_user_by_id(user_id, db)
     # Update user fields with new data
-    # user_data = UserUpdate.model_validate(existing_user)
-    if existing_user is None:
+    if existing_user_to_update is None:
         # Handle the case where the user doesn't exist
         # For example, return None or raise an HTTPException
         raise HTTPException(status_code=404, detail="User not found")
-    # for field, value in user_update.model_dump(exclude_unset=True).items():
-    #     # Check if the field is the password and hash it
-    #     # if field == "password":
-    #     #     value = Hasher.get_password_hash(value)
-    #     if getattr(user_data, field, None) != value:
-    #         setattr(user_data, field, value)
-
-    existing_user.first_name = (user_update.first_name,)
-    existing_user.last_name = (user_update.last_name,)
-    existing_user.email = (user_update.email,)
+    existing_user_to_update.first_name = user_update.first_name
+    existing_user_to_update.last_name = user_update.last_name
+    existing_user_to_update.email = user_update.email
     db.commit()
-    db.refresh(existing_user)
-    return existing_user
+    db.refresh(existing_user_to_update)
+    return existing_user_to_update
 
 
 def delete_user(user_id: str, db: Session):
