@@ -11,11 +11,9 @@ import uuid
 
 class Todo(Base):
     """
-    Todo item entity model representing a todo item in the database.
-    Attributes include todo ID, todo name, if item was done or not, time of creating and updating as well as connection
-    to relationship with the user
-
-    The table name is set to 'todos'
+        Todo item entity model representing a todo item in the database.
+        Attributes include todo ID as PK, unique ID todo name, if item was done or not, time of creating and updating
+        connection to relationship with the user
     """
 
     __tablename__ = "todos"
@@ -25,7 +23,7 @@ class Todo(Base):
     todo_done_or_not = Column(Boolean, default=False)
     todo_created_at = Column(DateTime, default=datetime.now)
     todo_updated_at = Column(DateTime, default=datetime.now)
-    # it is fore for which tabel - user and witch field user_id
+    # it is for which tabel - user and field id as primary_key
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     # relationship with the clas user, back_p to todos variable in user class

@@ -10,8 +10,10 @@ from atom.tests.test_user_routers import create_user, get_user_by_id
 # veryfication
 
 
+
+
 def create_user_and_todo(
-    test_app, first_name, last_name, email, todo_name, todo_done_or_not
+        test_app, first_name, last_name, email, todo_name, todo_done_or_not
 ):
     """
     Helper function to create a user and associate created item to the user .
@@ -23,38 +25,74 @@ def create_user_and_todo(
     assert create_user_for_todo.status_code == 200, "failed to create user"
     created_user_for_todo = create_user_for_todo.json()
 
-    # now take this user id
-    numeric_user_id = created_user_for_todo["id"]  # Numeric ID
-    user_id = created_user_for_todo["user_id"]
+    # now take this user_id_unique
+    user_id = created_user_for_todo["unique_user_id"]
+    # numeric_user_id = created_user_for_todo["id"]
 
     # create todo_item
     todo_item_data = {
         "todo_name": todo_name,
-        "owner_id": numeric_user_id,
         "todo_done_or_not": todo_done_or_not,
     }
-    response = test_app.post("/todos", json=todo_item_data)
-    return numeric_user_id, user_id, response
+    response = test_app.post(f"/api/v1/users/{user_id}/todos", json=todo_item_data)
+    return user_id, response
 
 
-# def test_read_users_todo(test_app):
-#     """
-#     This is endpoint to test the items that the user has created it. This test send the get response to route
-#     /users/{user_id}/todos and check the response 200 as well as the response content the list that has a daita in JSON format
+def test_create_todo_item_by_user(test_app):
+    """
+    This is a test to create todo item by a user.
+    The test first create the user as well as todo item, next it checks if the response status of created todo is correct
+
+    """
+    user_id, created_todo_response = create_user_and_todo(
+        test_app, "Maria", "Dunal", "dunaswewwss554@gmail.com", "go to the gym", False
+    )
+    assert created_todo_response.status_code == 200, "failed to create user"
+    todo_item = created_todo_response.json()
+    # veryfication
+    assert todo_item["todo_name"] == "go to the gym"
+    assert todo_item["todo_done_or_not"] is False
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
 #
-#     """
+def test_create_todo_item_by_non_existing_user(test_app):
+    """
+    Negative Test Case
+    This is a test to create todo item by a user.
+    The test first create the user as well as todo item, next it checks if the response status of created todo is correct
+
+    """
+    non_existing_user_id = "abcdeefghijklmnorst"
+    todo_data = {
+        "todo_name": "go to the gym",
+        "todo_done_or_not": False
+    }
+
+    create_todo_response = test_app.post(f"/api/v1/users/{non_existing_user_id}/todos", json=todo_data)
+
+    # Expecting a failure response such as 404 Not Found or a similar error code
+    assert create_todo_response.status_code != 200, "Expected failure when creating todo for non-existing user"
+
+def test_read_users_todo(test_app):
+    """
+    This is endpoint to test the items that the user has created it. This test send the get response to route
+    /users/{user_id}/todos and check the response 200 as well as the response content the list that has a daita in JSON format
+
+    """
+
+    user_id, _ = create_user_and_todo(
+        test_app, "Paulina", "Powik", "powsssssik@gmail.com", "gardening", False
+    )
+    # now take the id of the user
+
+    all_todos_response = test_app.get(f"/api/v1/users/{user_id}/todos")
+
+    assert all_todos_response.status_code == 200
+    assert isinstance(all_todos_response.json(), list)
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
 #
-#     _, user_id, _ = create_user_and_todo(
-#         test_app, "Paulina", "Powik", "powik@gmail.com", "gardening", False
-#     )
-#     # now take the id of the user
-#
-#     all_todos_response = test_app.get(f"/users/{user_id}/todos")
-#
-#     assert all_todos_response.status_code == 200
-#     assert isinstance(all_todos_response.json(), list)
-#
-#
+
 def test_read_todo_item_by_user(test_app):
     # test create user and create the todo item
     """
@@ -65,96 +103,198 @@ def test_read_todo_item_by_user(test_app):
     3. verifies that the status code is 200 and that the response content matches the expected data format
 
     """
-    _, user_id, todo_create = create_user_and_todo(
-        test_app, "Anna", "Kik", "kik@gmail.com", "drinking a water", False
+    user_id, todo_create = create_user_and_todo(
+        test_app, "Anna", "Kielich", "kiehghghh@gmail.com", "drinking a water", False
     )
-    # check if that was created and is good
-    assert todo_create.status_code == 200, "failed to create user"
+    assert todo_create.status_code == 200, "failed to create todo item"
     todo_created = todo_create.json()
-    # take todo_id
-    todo_id = todo_created["todo_id"]  # Assuming the ID field is named 'todo_id'
-    response = test_app.get(f"/users/{user_id}/todos/{todo_id}")
-    assert response.status_code == 200, "failed to retrive todo item"
+    todo_id = todo_created["unique_todo_id"]
+
+    # Test the specific endpoint
+    response = test_app.get(f"/api/v1/users/{user_id}/todos/{todo_id}")
+    assert response.status_code == 200, "failed to retrieve todo item"
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
 
 
+def test_update_todo_item_by_user(test_app):
+    """
+    This is a test to update a specific todo item created by user
+    First the new user and todo item is created, and the response status is checked.
+    Next the response is convert into JSON format and  sent request put to the endpoint;
+    The response status is verified to be 200 and at the end the user and todo item is being deleted
+    """
+    user_id, todo_response = create_user_and_todo(
+        test_app, "Danuta", "Polaczek", "dpolasczek909000@gmail.com", "cooking", False
+    )
+    assert todo_response.status_code == 200, "Failed to create todo item"
+
+    todo_created_json = todo_response.json()
+    todo_id = todo_created_json["unique_todo_id"]
+
+    updated_data = {
+        "todo_name": "doing the dishes",
+        "todo_done_or_not": True,
+    }
+
+    try:
+        # Update the todo item
+        update_response = test_app.put(f"/api/v1/users/{user_id}/todos/{todo_id}", json=updated_data)
+        assert update_response.status_code == 200, "Failed to update todo item"
+
+        # Assert updated data
+        updated_todo = update_response.json()
+        assert updated_todo["todo_name"] == "doing the dishes"
+        assert updated_todo["todo_done_or_not"] is True
+
+    finally:
+        # Cleanup: delete the todo item
+        test_app.delete(f"/api/v1/users/{user_id}/todos/{todo_id}")
+        delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+        assert delete_response.status_code == 200, "Failed to delete user"
 #
-#
-# def test_create_todo_item_by_user(test_app):
-#     """
-#     This is a test to create todo item by a user.
-#     The test first create the user as well as todo item, next it checks if the response status of created todo is correct
-#
-#     """
-#     numeric_user_id , created_todo_response = create_user_and_todo(
-#         test_app, "Maria", "Dunalewicz", "dunalewicz@gmail.com", "go to the gym", False
-#     )
-#     assert created_todo_response.status_code == 200, "failed to create user"
-#     todo_item = created_todo_response.json()
-#     # veryfication
-#     assert todo_item["todo_name"] == "go to the gym"
-#     assert todo_item["owner_id"] == numeric_user_id
-#     assert todo_item["todo_done_or_not"] is False
-#
-#
-# def test_update_todo_item_by_user(test_app):
-#     """
-#     This is a test to update a specific todo item created by user
-#     First the new user and todo item is created, and the response status is checked.
-#     Next the response is convert into JSON format and  sent request put to the endpoint;
-#     The response status is verified to be 200 and at the end the user and todo item is being deleted
-#     """
-#     user_id, todo_response = create_user_and_todo(
-#         test_app, "Danuta", "Polaczek", "dpolaczek00@gmail.com", "cooking", False
-#     )
-#     assert todo_response.status_code == 200, "Failed to create todo item"
-#
-#     todo_created_json = todo_response.json()
-#     todo_id = todo_created_json["todo_id"]
-#
-#     updated_data = {
-#         "todo_name": "doing the dishes",
-#         "owner_id": user_id,
-#         "todo_done_or_not": True,
-#     }
-#
-#     try:
-#         # Update the todo item
-#         update_response = test_app.put(
-#             f"/users/{user_id}/todos/{todo_id}", json=updated_data
-#         )
-#         assert update_response.status_code == 200, "Failed to update todo item"
-#
-#         # Assert updated data
-#         updated_todo = update_response.json()
-#         assert updated_todo["todo_name"] == "doing the dishes"
-#         assert updated_todo["todo_done_or_not"] is True
-#
-#     finally:
-#         # Cleanup: delete the todo item
-#         test_app.delete(f"/users/{user_id}/todos/{todo_id}")
-#
-#
-# def test_delete_todo_item_by_user(test_app):
-#     # First create the user and todo
-#     """
-#     Test the deletion of a specific todo item created by a user.
-#
-#     This test function ensures that a todo item can be deleted successfully by:
-#     1. Creating a new user and associated todo item.
-#     2. Sending a DELETE request to the endpoint '/users/{user_id}/todos/{todo_id}'.
-#     3. Verifying that the response status code is 200, indicating successful deletion.
-#     """
-#     user_id, todo_response = create_user_and_todo(
-#         test_app, "Karol", "Wolowski", "wolowski12443@gmail.com", "driving", False
-#     )
-#
-#     # Assert for todo item creation
-#     assert todo_response.status_code == 200, "Failed to create todo item"
-#     todo_created_json = todo_response.json()
-#
-#     # Get todo ID from the created todo item
-#     todo_id = todo_created_json["todo_id"]
-#
-#     # Check the response to delete
-#     delete_response = test_app.delete(f"/users/{user_id}/todos/{todo_id}")
-#     assert delete_response.status_code == 200, "Failed to delete todo item"
+
+def test_update_never_created_item_by_user(test_app):
+    """
+    This is a test to update a specific todo item created by user
+    First the new user and todo item is created, and the response status is checked.
+    Next the response is convert into JSON format and  sent request put to the endpoint;
+    The response status is verified to be 200 and at the end the user and todo item is being deleted
+    """
+    user_id, todo_response = create_user_and_todo(
+        test_app, "Danuta", "Pola", "dp0pssso@gmail.com", "cooking", False
+    )
+    # assert todo_response.status_code == 200, "Failed to create todo item"
+
+    todo_created_json = todo_response.json()
+    todo_id = todo_created_json["unique_todo_id"]
+    non_existent_todo_item = todo_id + "abcd"
+
+    updated_data = {
+        "todo_name": "doing the dishes",
+        "todo_done_or_not": True,
+    }
+    update_response = test_app.put(f"/api/v1/users/{user_id}/todos/{non_existent_todo_item}", json=updated_data)
+    assert update_response.status_code == 404, "Expected a 404 Not Found response for non-existent todo item"
+    # Assert updated data
+    # updated_todo = update_response.json()
+    # assert updated_todo["todo_name"] == "doing the dishes"
+    # assert updated_todo["todo_done_or_not"] is True
+    error_response = update_response.json()
+    assert "detail" in error_response, "Expected an error detail in the response"
+    assert "not found" in error_response["detail"].lower(), "Expected a 'not found' message in the error detail"
+
+    #Cleanup: delete the todo item
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
+
+
+
+def test_update_todo_item_by_wrong_user(test_app):
+    """
+    This is a test to update a specific todo item created by user
+    First the new user and todo item is created, and the response status is checked.
+    Next the response is convert into JSON format and  sent request put to the endpoint;
+    The response status is verified to be 200 and at the end the user and todo item is being deleted
+    """
+    user_id, todo_response = create_user_and_todo(
+        test_app, "Danuta", "Pola", "lsls@gmail.com", "cooking", False
+    )
+    # assert todo_response.status_code == 200, "Failed to create todo item"
+
+    todo_created_json = todo_response.json()
+    todo_id = todo_created_json["unique_todo_id"]
+    non_existent_user = user_id + "abcd"
+
+    updated_data = {
+        "todo_name": "doing the dishes",
+        "todo_done_or_not": True,
+    }
+    update_response = test_app.put(f"/api/v1/users/{non_existent_user}/todos/{todo_id}", json=updated_data)
+    assert update_response.status_code == 404, "Expected a 404 Not Found response for non-existent todo item"
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
+
+def test_delete_todo_item_by_user(test_app):
+    # First create the user and todo
+    """
+    Test the deletion of a specific todo item created by a user.
+
+    This test function ensures that a todo item can be deleted successfully by:
+    1. Creating a new user and associated todo item.
+    2. Sending a DELETE request to the endpoint '/users/{user_id}/todos/{todo_id}'.
+    3. Verifying that the response status code is 200, indicating successful deletion.
+    """
+    user_id, todo_response = create_user_and_todo(
+        test_app, "Karol", "Wolowski", "wolowsaakai43@gmail.com", "driving", False
+    )
+
+    # Assert for todo item creation
+    assert todo_response.status_code == 200, "Failed to create todo item"
+    todo_created_json = todo_response.json()
+
+    # Get todo ID from the created todo item
+    todo_id = todo_created_json["unique_todo_id"]
+
+    # Check the response to delete
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}/todos/{todo_id}")
+    assert delete_response.status_code == 200, "Failed to delete todo item"
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
+def test_delete_never_created_item_by_user(test_app):
+    # First create the user and todo
+    """
+    Test the deletion of a specific todo item created by a user.
+
+    This test function ensures that a todo item can be deleted successfully by:
+    1. Creating a new user and associated todo item.
+    2. Sending a DELETE request to the endpoint '/users/{user_id}/todos/{todo_id}'.
+    3. Verifying that the response status code is 200, indicating successful deletion.
+    """
+    user_id, todo_response = create_user_and_todo(
+        test_app, "Karol", "Wolowssski", "aa3@gmail.com", "driving", False
+    )
+
+    # Assert for todo item creation
+    assert todo_response.status_code == 200, "Failed to create todo item"
+    todo_created_json = todo_response.json()
+
+    # Get todo ID from the created todo item
+    todo_id = todo_created_json["unique_todo_id"]
+    non_existing_todo_id = todo_id + " abcdefgd"
+
+
+    # Check the response to delete
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}/todos/{non_existing_todo_id}")
+    assert delete_response.status_code == 404, "Failed to delete todo item"
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
+def test_delete_todo_item_by_wrong_user(test_app):
+    # First create the user and todo
+    """
+    Test the deletion of a specific todo item created by a user.
+
+    This test function ensures that a todo item can be deleted successfully by:
+    1. Creating a new user and associated todo item.
+    2. Sending a DELETE request to the endpoint '/users/{user_id}/todos/{todo_id}'.
+    3. Verifying that the response status code is 200, indicating successful deletion.
+    """
+    user_id, todo_response = create_user_and_todo(
+        test_app, "Karol", "Wolowssski", "w2443@gmail.com", "driving", False
+    )
+
+    # Assert for todo item creation
+    assert todo_response.status_code == 200, "Failed to create todo item"
+    todo_created_json = todo_response.json()
+
+    # Get todo ID from the created todo item
+    todo_id = todo_created_json["unique_todo_id"]
+    non_existing_user_id = todo_id + " abcdefgd"
+
+
+    # Check the response to delete
+    delete_response = test_app.delete(f"/api/v1/users/{non_existing_user_id}/todos/{todo_id}")
+    assert delete_response.status_code == 404, "Failed to delete todo item"
+    delete_response = test_app.delete(f"/api/v1/users/{user_id}")
+    assert delete_response.status_code == 200, "Failed to delete user"
+

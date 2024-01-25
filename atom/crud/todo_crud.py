@@ -6,33 +6,20 @@ from datetime import datetime
 import datetime
 
 
-def get_all_todos_by_owner(user_id: str, db: Session):
-    """
-    Retrive all todo items belonging to a specific user
-
-    :param user_id:  the uniqe identifier of the user whose todo items are to be retrieved
-    :param db: db session instance from database interactions
-    :return: a list of todo model instances representing todo item belonging to the specific user
-    """
-    user = db.query(User).filter(User.user_id == user_id).first()
-    items = db.query(Todo).filter(Todo.owner_id == user.id).all()
-    return items
-
-
-def create_todo_by_owner(item_data: ToDoCreate, db: Session):
+def create_todo_by_user(user_id: str, item_data: ToDoCreate, db: Session):
     """
     Create a new todo item for a specific user .
-    The function first check if the user exists and if yes,
-    then creates a new todo instance and saves it to database.
-    :param item_data:
-    :param db:
-    :return: a new created todo model instance
+    The function first check if the user_id pass to function has equivalent in database
+    Next checks if the user exists and if yes,
+    then creates a new todo instance and saves it to database with associate owner_id.
+
+    Return: a new created todo model instance
     """
-    # check if the user exists
-    user = db.query(User).filter(User.user_id == item_data.owner_id).first()
+
+    # so the user_id 'aaaa' is pass to endpoint and first is checks if matches database
+    user = db.query(User).filter(User.unique_user_id == user_id).first()
     if not user:
         return None
-
     new_item = Todo(todo_name=item_data.todo_name, owner_id=user.id)
     db.add(new_item)
     db.commit()
@@ -40,25 +27,42 @@ def create_todo_by_owner(item_data: ToDoCreate, db: Session):
     return new_item
 
 
-def get_todo_item_and_owner(user_id: str, todo_id: str, db: Session):
+def get_all_todos_by_owner(user_id: str, db: Session):
     """
-    Retrieve a specific todo item along with its owner's information.
+    Retrive all todo items belonging to a specific user
+
+    Parameters user_id:  the unique identifier of the user whose todo items are to be retrieved
+    db: db session instance from database interactions
+    Return: a list of todo model instances representing todo item belonging to the specific user
+    """
+    # user = db.query(User).filter(User.unique_user_id == user_id).first()
+    # items = db.query(Todo).filter(Todo.owner_id == user.id).all()
+
+    items = db.query(Todo).join(User).filter(User.unique_user_id == user_id).all()
+    return items
+
+
+def get_todo_item_by_owner(user_id: str, todo_id: str, db: Session):
+    """
+    Retrieve a specific todo item belong to the owner.
 
     user_id: The unique identifier of the user who owns the todo item.
     todo_id: The unique identifier of the todo item to retrieve.
     db: A SQLAlchemy Session instance for database interaction.
-     Returns:
-        A Todo model instance representing the requested todo item if found, or None otherwise.
+    Returns: A Todo model instance representing the requested todo item if found, or None otherwise.
     """
-    user = db.query(User).filter(User.user_id == user_id).first()
-    item_owner = (
-        db.query(Todo).filter(Todo.owner_id == user.id, Todo.todo_id == todo_id).first()
+    user = db.query(User).filter(User.unique_user_id == user_id).first()
+    if user is None:
+        # Handle the case where the user does not exist
+        return None
+    get_item = (
+        db.query(Todo).filter(Todo.owner_id == user.id, Todo.unique_todo_id == todo_id).first()
     )
-    return item_owner
+    return get_item
 
 
 def update_todo_item_by_owner(
-    user_id: str, todo_id: str, item_data: ToDoUpdate, db: Session
+        user_id: str, todo_id: str, item_data: ToDoUpdate, db: Session
 ):
     """
     Update a specific todo item owned by a user.
@@ -76,21 +80,22 @@ def update_todo_item_by_owner(
     """
 
     # take the task with specific id and check with the user id
-    user = db.query(User).filter(User.user_id == user_id).first()
-    todo_item = (
-        db.query(Todo).filter(Todo.todo_id == todo_id, Todo.owner_id == user.id).first()
-    )
-    if not todo_item:
+    # user = db.query(User).filter(User.user_id == user_id).first()
+    # todo_item = (
+    #     db.query(Todo).filter(Todo.todo_id == todo_id, Todo.owner_id == user.id).first()
+    # )
+    todo_item_to_be_update = get_todo_item_by_owner(user_id, todo_id, db)
+    if not todo_item_to_be_update:
         return None
 
     if item_data.todo_name is not None:
-        todo_item.todo_name = item_data.todo_name
+        todo_item_to_be_update.todo_name = item_data.todo_name
     if item_data.todo_done_or_not is not None:
-        todo_item.todo_done_or_not = item_data.todo_done_or_not
+        todo_item_to_be_update.todo_done_or_not = item_data.todo_done_or_not
 
-    todo_item.todo_updated_at = datetime.datetime.now()
+    todo_item_to_be_update.todo_updated_at = datetime.datetime.now()
     db.commit()
-    return todo_item
+    return todo_item_to_be_update
 
 
 def delete_todo_item_by_owner(user_id: str, todo_id: str, db: Session):
@@ -99,8 +104,8 @@ def delete_todo_item_by_owner(user_id: str, todo_id: str, db: Session):
     This function retrieves the todo item based on the provided user ID and todo ID. If the item is found, it deletes the item from the database.
     The deleted Todo model instance if the item was found and deleted, or None otherwise.
     """
-    todo_item_do_delete = get_todo_item_and_owner(user_id, todo_id, db)
-    if todo_item_do_delete:
-        db.delete(todo_item_do_delete)
+    todo_item_to_be_delete = get_todo_item_by_owner(user_id, todo_id, db)
+    if todo_item_to_be_delete:
+        db.delete(todo_item_to_be_delete)
         db.commit()
-    return todo_item_do_delete
+    return todo_item_to_be_delete

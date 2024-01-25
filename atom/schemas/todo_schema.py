@@ -13,11 +13,10 @@ This module defines the pydantic schema for todo items.
 
 class ToDoCreate(BaseModel):
     """
-    Pydantic schema for creating a new todo item .
+    Pydantic schema for creating a new todo item.
     """
 
     todo_name: str
-    owner_id: str
     todo_done_or_not: Optional[bool]
 
 
@@ -28,12 +27,12 @@ class ToDoShow(BaseModel):
     from the database.
     """
 
-    todo_id: str
+    unique_todo_id: str
     todo_name: str
     todo_done_or_not: bool
     todo_created_at: datetime
     todo_updated_at: datetime
-    owner: Optional[ShowUser]
+
 
 
 class ToDoUpdate(BaseModel):
