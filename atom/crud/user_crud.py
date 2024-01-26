@@ -56,7 +56,7 @@ def get_user_by_id(user_id: str, db: Session) -> Optional[User]:
     Returns:
     - User or None: The User entity if found, otherwise None.
     """
-    user = db.query(User).filter(User.unique_user_id == user_id).first()
+    user = db.query(User).filter(User.unique_id == user_id).first()
     return user
 
 

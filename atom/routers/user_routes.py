@@ -20,7 +20,7 @@ router = APIRouter()
 
 
 # UserCreate schema will validate that if it has email in proper format
-@router.post("/api/v1/users", response_model=ShowUser)
+@router.post("/api/v1/users", response_model=ShowUser, status_code=201)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     Create a new user in the system.
@@ -37,7 +37,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.get("/api/v1/users/all", response_model=List[ShowUser])
+@router.get("/api/v1/users", response_model=List[ShowUser])
 def get_all_users(db: Session = Depends(get_db)):
     """
     Retrieve a list of all users.
@@ -95,7 +95,7 @@ def update_user_by_id(
     return user_to_update
 
 
-@router.delete("/api/v1/users/{user_id}")
+@router.delete("/api/v1/users/{user_id}", status_code=204)
 def delete_user_by_id(user_id: str, db: Session = Depends(get_db)):
     """
     Delete an existing user's information.

@@ -17,10 +17,10 @@ def create_todo_by_user(user_id: str, item_data: ToDoCreate, db: Session):
     """
 
     # so the user_id 'aaaa' is pass to endpoint and first is checks if matches database
-    user = db.query(User).filter(User.unique_user_id == user_id).first()
+    user = db.query(User).filter(User.unique_id == user_id).first()
     if not user:
         return None
-    new_item = Todo(todo_name=item_data.todo_name, owner_id=user.id)
+    new_item = Todo(todo_name=item_data.title, owner_id=user.id)
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
@@ -38,7 +38,7 @@ def get_all_todos_by_owner(user_id: str, db: Session):
     # user = db.query(User).filter(User.unique_user_id == user_id).first()
     # items = db.query(Todo).filter(Todo.owner_id == user.id).all()
 
-    items = db.query(Todo).join(User).filter(User.unique_user_id == user_id).all()
+    items = db.query(Todo).join(User).filter(User.unique_id == user_id).all()
     return items
 
 
@@ -51,18 +51,20 @@ def get_todo_item_by_owner(user_id: str, todo_id: str, db: Session):
     db: A SQLAlchemy Session instance for database interaction.
     Returns: A Todo model instance representing the requested todo item if found, or None otherwise.
     """
-    user = db.query(User).filter(User.unique_user_id == user_id).first()
+    user = db.query(User).filter(User.unique_id == user_id).first()
     if user is None:
         # Handle the case where the user does not exist
         return None
     get_item = (
-        db.query(Todo).filter(Todo.owner_id == user.id, Todo.unique_todo_id == todo_id).first()
+        db.query(Todo)
+        .filter(Todo.owner_id == user.id, Todo.unique_id == todo_id)
+        .first()
     )
     return get_item
 
 
 def update_todo_item_by_owner(
-        user_id: str, todo_id: str, item_data: ToDoUpdate, db: Session
+    user_id: str, todo_id: str, item_data: ToDoUpdate, db: Session
 ):
     """
     Update a specific todo item owned by a user.
@@ -88,12 +90,12 @@ def update_todo_item_by_owner(
     if not todo_item_to_be_update:
         return None
 
-    if item_data.todo_name is not None:
-        todo_item_to_be_update.todo_name = item_data.todo_name
-    if item_data.todo_done_or_not is not None:
-        todo_item_to_be_update.todo_done_or_not = item_data.todo_done_or_not
+    if item_data.title is not None:
+        todo_item_to_be_update.title = item_data.title
+    if item_data.completed is not None:
+        todo_item_to_be_update.completed = item_data.completed
 
-    todo_item_to_be_update.todo_updated_at = datetime.datetime.now()
+    todo_item_to_be_update.updated_at = datetime.datetime.now()
     db.commit()
     return todo_item_to_be_update
 

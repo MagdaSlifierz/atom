@@ -10,11 +10,7 @@ from atom.tests.test_user_routers import create_user, get_user_by_id
 # veryfication
 
 
-
-
-def create_user_and_todo(
-        test_app, first_name, last_name, email, todo_name, todo_done_or_not
-):
+def create_user_and_todo(test_app, first_name, last_name, email, title, completed):
     """
     Helper function to create a user and associate created item to the user .
 
@@ -26,13 +22,12 @@ def create_user_and_todo(
     created_user_for_todo = create_user_for_todo.json()
 
     # now take this user_id_unique
-    user_id = created_user_for_todo["unique_user_id"]
-    # numeric_user_id = created_user_for_todo["id"]
+    user_id = created_user_for_todo["unique_id"]
 
     # create todo_item
     todo_item_data = {
-        "todo_name": todo_name,
-        "todo_done_or_not": todo_done_or_not,
+        "title": title,
+        "completed": completed,
     }
     response = test_app.post(f"/api/v1/users/{user_id}/todos", json=todo_item_data)
     return user_id, response
@@ -50,10 +45,12 @@ def test_create_todo_item_by_user(test_app):
     assert created_todo_response.status_code == 200, "failed to create user"
     todo_item = created_todo_response.json()
     # veryfication
-    assert todo_item["todo_name"] == "go to the gym"
-    assert todo_item["todo_done_or_not"] is False
+    assert todo_item["title"] == "go to the gym"
+    assert todo_item["completed"] is False
     delete_response = test_app.delete(f"/api/v1/users/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
+
+
 #
 def test_create_todo_item_by_non_existing_user(test_app):
     """
@@ -63,15 +60,17 @@ def test_create_todo_item_by_non_existing_user(test_app):
 
     """
     non_existing_user_id = "abcdeefghijklmnorst"
-    todo_data = {
-        "todo_name": "go to the gym",
-        "todo_done_or_not": False
-    }
+    todo_data = {"title": "go to the gym", "completed": False}
 
-    create_todo_response = test_app.post(f"/api/v1/users/{non_existing_user_id}/todos", json=todo_data)
+    create_todo_response = test_app.post(
+        f"/api/v1/users/{non_existing_user_id}/todos", json=todo_data
+    )
 
     # Expecting a failure response such as 404 Not Found or a similar error code
-    assert create_todo_response.status_code != 200, "Expected failure when creating todo for non-existing user"
+    assert (
+        create_todo_response.status_code != 200
+    ), "Expected failure when creating todo for non-existing user"
+
 
 def test_read_users_todo(test_app):
     """
@@ -91,7 +90,10 @@ def test_read_users_todo(test_app):
     assert isinstance(all_todos_response.json(), list)
     delete_response = test_app.delete(f"/api/v1/users/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
+
+
 #
+
 
 def test_read_todo_item_by_user(test_app):
     # test create user and create the todo item
@@ -108,7 +110,7 @@ def test_read_todo_item_by_user(test_app):
     )
     assert todo_create.status_code == 200, "failed to create todo item"
     todo_created = todo_create.json()
-    todo_id = todo_created["unique_todo_id"]
+    todo_id = todo_created["unique_id"]
 
     # Test the specific endpoint
     response = test_app.get(f"/api/v1/users/{user_id}/todos/{todo_id}")
@@ -130,29 +132,34 @@ def test_update_todo_item_by_user(test_app):
     assert todo_response.status_code == 200, "Failed to create todo item"
 
     todo_created_json = todo_response.json()
-    todo_id = todo_created_json["unique_todo_id"]
+    todo_id = todo_created_json["unique_id"]
 
     updated_data = {
-        "todo_name": "doing the dishes",
-        "todo_done_or_not": True,
+        "title": "doing the dishes",
+        "completed": True,
     }
 
     try:
         # Update the todo item
-        update_response = test_app.put(f"/api/v1/users/{user_id}/todos/{todo_id}", json=updated_data)
+        update_response = test_app.put(
+            f"/api/v1/users/{user_id}/todos/{todo_id}", json=updated_data
+        )
         assert update_response.status_code == 200, "Failed to update todo item"
 
         # Assert updated data
         updated_todo = update_response.json()
-        assert updated_todo["todo_name"] == "doing the dishes"
-        assert updated_todo["todo_done_or_not"] is True
+        assert updated_todo["title"] == "doing the dishes"
+        assert updated_todo["completed"] is True
 
     finally:
         # Cleanup: delete the todo item
         test_app.delete(f"/api/v1/users/{user_id}/todos/{todo_id}")
         delete_response = test_app.delete(f"/api/v1/users/{user_id}")
         assert delete_response.status_code == 200, "Failed to delete user"
+
+
 #
+
 
 def test_update_never_created_item_by_user(test_app):
     """
@@ -167,27 +174,29 @@ def test_update_never_created_item_by_user(test_app):
     # assert todo_response.status_code == 200, "Failed to create todo item"
 
     todo_created_json = todo_response.json()
-    todo_id = todo_created_json["unique_todo_id"]
+    todo_id = todo_created_json["unique_id"]
     non_existent_todo_item = todo_id + "abcd"
 
     updated_data = {
-        "todo_name": "doing the dishes",
-        "todo_done_or_not": True,
+        "title": "doing the dishes",
+        "completed": True,
     }
-    update_response = test_app.put(f"/api/v1/users/{user_id}/todos/{non_existent_todo_item}", json=updated_data)
-    assert update_response.status_code == 404, "Expected a 404 Not Found response for non-existent todo item"
+    update_response = test_app.put(
+        f"/api/v1/users/{user_id}/todos/{non_existent_todo_item}", json=updated_data
+    )
+    assert (
+        update_response.status_code == 404
+    ), "Expected a 404 Not Found response for non-existent todo item"
     # Assert updated data
-    # updated_todo = update_response.json()
-    # assert updated_todo["todo_name"] == "doing the dishes"
-    # assert updated_todo["todo_done_or_not"] is True
     error_response = update_response.json()
     assert "detail" in error_response, "Expected an error detail in the response"
-    assert "not found" in error_response["detail"].lower(), "Expected a 'not found' message in the error detail"
+    assert (
+        "not found" in error_response["detail"].lower()
+    ), "Expected a 'not found' message in the error detail"
 
-    #Cleanup: delete the todo item
+    # Cleanup: delete the todo item
     delete_response = test_app.delete(f"/api/v1/users/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
-
 
 
 def test_update_todo_item_by_wrong_user(test_app):
@@ -203,17 +212,22 @@ def test_update_todo_item_by_wrong_user(test_app):
     # assert todo_response.status_code == 200, "Failed to create todo item"
 
     todo_created_json = todo_response.json()
-    todo_id = todo_created_json["unique_todo_id"]
+    todo_id = todo_created_json["unique_id"]
     non_existent_user = user_id + "abcd"
 
     updated_data = {
-        "todo_name": "doing the dishes",
-        "todo_done_or_not": True,
+        "title": "doing the dishes",
+        "completed": True,
     }
-    update_response = test_app.put(f"/api/v1/users/{non_existent_user}/todos/{todo_id}", json=updated_data)
-    assert update_response.status_code == 404, "Expected a 404 Not Found response for non-existent todo item"
+    update_response = test_app.put(
+        f"/api/v1/users/{non_existent_user}/todos/{todo_id}", json=updated_data
+    )
+    assert (
+        update_response.status_code == 404
+    ), "Expected a 404 Not Found response for non-existent todo item"
     delete_response = test_app.delete(f"/api/v1/users/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
+
 
 def test_delete_todo_item_by_user(test_app):
     # First create the user and todo
@@ -234,13 +248,15 @@ def test_delete_todo_item_by_user(test_app):
     todo_created_json = todo_response.json()
 
     # Get todo ID from the created todo item
-    todo_id = todo_created_json["unique_todo_id"]
+    todo_id = todo_created_json["unique_id"]
 
     # Check the response to delete
     delete_response = test_app.delete(f"/api/v1/users/{user_id}/todos/{todo_id}")
     assert delete_response.status_code == 200, "Failed to delete todo item"
     delete_response = test_app.delete(f"/api/v1/users/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
+
+
 def test_delete_never_created_item_by_user(test_app):
     # First create the user and todo
     """
@@ -260,15 +276,18 @@ def test_delete_never_created_item_by_user(test_app):
     todo_created_json = todo_response.json()
 
     # Get todo ID from the created todo item
-    todo_id = todo_created_json["unique_todo_id"]
+    todo_id = todo_created_json["unique_id"]
     non_existing_todo_id = todo_id + " abcdefgd"
 
-
     # Check the response to delete
-    delete_response = test_app.delete(f"/api/v1/users/{user_id}/todos/{non_existing_todo_id}")
+    delete_response = test_app.delete(
+        f"/api/v1/users/{user_id}/todos/{non_existing_todo_id}"
+    )
     assert delete_response.status_code == 404, "Failed to delete todo item"
     delete_response = test_app.delete(f"/api/v1/users/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
+
+
 def test_delete_todo_item_by_wrong_user(test_app):
     # First create the user and todo
     """
@@ -288,13 +307,13 @@ def test_delete_todo_item_by_wrong_user(test_app):
     todo_created_json = todo_response.json()
 
     # Get todo ID from the created todo item
-    todo_id = todo_created_json["unique_todo_id"]
+    todo_id = todo_created_json["unique_id"]
     non_existing_user_id = todo_id + " abcdefgd"
 
-
     # Check the response to delete
-    delete_response = test_app.delete(f"/api/v1/users/{non_existing_user_id}/todos/{todo_id}")
+    delete_response = test_app.delete(
+        f"/api/v1/users/{non_existing_user_id}/todos/{todo_id}"
+    )
     assert delete_response.status_code == 404, "Failed to delete todo item"
     delete_response = test_app.delete(f"/api/v1/users/{user_id}")
     assert delete_response.status_code == 200, "Failed to delete user"
-

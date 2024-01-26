@@ -20,7 +20,9 @@ router = APIRouter()
 
 
 @router.post("/api/v1/users/{user_id}/todos")
-def create_todo_item_by_user(user_id: str, item_data: ToDoCreate, db: Session = Depends(get_db)):
+def create_todo_item_by_user(
+    user_id: str, item_data: ToDoCreate, db: Session = Depends(get_db)
+):
     """
     Create a new todo item.
     This endpoint accepts user_id, todo item data and creates a new todo item in the database. If the specified user does not exist, it returns a 404 error.
