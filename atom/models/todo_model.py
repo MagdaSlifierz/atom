@@ -12,8 +12,8 @@ import uuid
 class Todo(Base):
     """
     Todo item entity model representing a todo item in the database.
-    Attributes include todo ID as PK, unique ID todo name, if item was done or not, time of creating and updating
-    connection to relationship with the user
+    Attributes include todo ID as PK, unique ID, title, completed, time of creating and updating
+    It represents connection to relationship with the user
     """
 
     __tablename__ = "todos"

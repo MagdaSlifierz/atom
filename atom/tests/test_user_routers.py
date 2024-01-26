@@ -1,10 +1,13 @@
 from atom.tests.conftest import test_app
 
+"""
+This module is to tests the endpoints related to user. 
+"""
+
 
 def create_user(test_app, first_name, last_name, email):
     """
     Helper function to create a user.
-
     Parameters: test_app: The test client instance, first_name: User's first name,
     last_name: User's last name, email: User's email.
 
@@ -52,7 +55,7 @@ def test_create_user(test_app):
     Test the endpoint for creating a new user.
 
     This test sends a POST request to the '/api/v1/users' route with JSON payload containing user data (first name, last name, email).
-    The test asserts that the response status code is 200 (OK) and the response JSON matches the data sent in the request.
+    The test asserts that the response status code is 201 and the response JSON matches the data sent in the request.
     """
 
     created_user_response = create_user(
@@ -109,8 +112,8 @@ def test_delete_user_by_id(test_app):
     This is a test to delete the user
     Firstly the user has been created and the response status has been checked
     Next the user data has been convert to json type
-    The  deleted request to the endpoint /user/delete/{user_id} was sent and is checked if
-    the response status code is 200, indicating successful deletion.
+    The  deleted request to the endpoint /api/v1/users/{user_id} was sent and is checked if
+    the response status code is 204, indicating successful deletion.
     """
     create_response = create_user(test_app, "Ola", "Zurek", "zurek@gmail.com")
     # asserts that the creation was successful (status code 200)

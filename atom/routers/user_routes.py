@@ -41,8 +41,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 def get_all_users(db: Session = Depends(get_db)):
     """
     Retrieve a list of all users.
+    This endpoint fetches and return a list of all users in the system
 
-    This endpoint fetches and return a list of all users in the sytem
     Parameters:
     - db (Session, optional): The database session dependency.
     Returns:
@@ -77,7 +77,6 @@ def update_user_by_id(
 ):
     """
     Update an existing user's information.
-
     This endpoint updates the data of the user specified by the user_id with the provided data.
 
     Parameters:
@@ -99,7 +98,6 @@ def update_user_by_id(
 def delete_user_by_id(user_id: str, db: Session = Depends(get_db)):
     """
     Delete an existing user's information.
-
     This endpoint delete the data of the user specified by the user_id with the provided data.
 
     Parameters:
@@ -108,7 +106,6 @@ def delete_user_by_id(user_id: str, db: Session = Depends(get_db)):
 
     Returns:
     - A message that the user was deleted.
-
     Raises:
     - HTTPException: 404 error if the user to delete is not found.
     """

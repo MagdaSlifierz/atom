@@ -8,7 +8,6 @@ from typing import Optional
 def create_new_user(user: UserCreate, db: Session):
     """
     Create a new user in the database.
-
     This function takes a UserCreate object and a SQLAlchemy Session, creates a new User
     entity from the UserCreate data, and saves it to the database.
 
@@ -32,12 +31,10 @@ def create_new_user(user: UserCreate, db: Session):
 def read_all_users(db: Session):
     """
     Retrieve all users from the database.
-
     This function queries the database for all User entities and returns them.
 
     Parameters:
     - db (Session): The SQLAlchemy session for database operations.
-
     Returns:
     - List[User]: A list of User entities.
     """
@@ -52,7 +49,6 @@ def get_user_by_id(user_id: str, db: Session) -> Optional[User]:
     Parameters:
     - user_id (UUID4): The unique identifier of the user.
     - db (Session): The SQLAlchemy session for database operations.
-
     Returns:
     - User or None: The User entity if found, otherwise None.
     """
@@ -67,7 +63,6 @@ def get_user_by_email(email: str, db: Session):
     Parameters:
     - email (str): The email address of the user.
     - db (Session): The SQLAlchemy session for database operations.
-
     Returns:
     - User or None: The User entity if found, otherwise None.
     """
@@ -78,7 +73,6 @@ def get_user_by_email(email: str, db: Session):
 def update_user(user_id: str, user_update: UserUpdate, db: Session):
     """
     Update an existing user's information.
-
     This function updates the information of an existing user based on the provided
     UserUpdate object. It dynamically updates only the fields that are provided in
     the UserUpdate object.
@@ -109,13 +103,11 @@ def update_user(user_id: str, user_update: UserUpdate, db: Session):
 def delete_user(user_id: str, db: Session):
     """
     Delete a user from the database.
-
     This function deletes the user associated with the provided user ID from the database.
 
     Parameters:
     - user_id (UUID4): The unique identifier of the user to be deleted.
     - db (Session): The SQLAlchemy session for database operations.
-
     Returns:
     - User or None: The deleted User entity if found and deleted, otherwise None.
     """

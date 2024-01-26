@@ -19,7 +19,7 @@ router = APIRouter()
 """
 
 
-@router.post("/api/v1/users/{user_id}/todos")
+@router.post("/api/v1/users/{user_id}/todos", status_code=201)
 def create_todo_item_by_user(
     user_id: str, item_data: ToDoCreate, db: Session = Depends(get_db)
 ):
@@ -43,9 +43,9 @@ def read_user_todos_items(user_id: str, db: Session = Depends(get_db)):
     """
     Retrieve all todo items for a specific user.
     This endpoint returns a list of todo items belonging to the specified user.
-    Args:
-        user_id: The unique identifier of the user whose todo items are to be retrieved.
-        db: A SQLAlchemy Session instance for database interaction.
+
+    Parameters: user_id: The unique identifier of the user whose todo items are to be retrieved.
+    db: A SQLAlchemy Session instance for database interaction.
     Returns:
         A list of Todo items for the specified user.
     """
@@ -56,14 +56,11 @@ def read_user_todos_items(user_id: str, db: Session = Depends(get_db)):
 def read_item_todo_by_user(user_id: str, todo_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a specific todo item created by a user.
-
     This endpoint fetches a single todo item specified by the todo ID and user ID. If the item is not found, it returns a 404 error.
 
-    Args:
-        user_id: The unique identifier of the user who owns the todo item.
-        todo_id: The unique identifier of the todo item to retrieve.
-        db: A SQLAlchemy Session instance for database interaction.
-
+    Parameters: user_id: The unique identifier of the user who owns the todo item.
+    todo_id: The unique identifier of the todo item to retrieve.
+    db: A SQLAlchemy Session instance for database interaction.
     Returns:
         A response indicating the todo item was successfully read.
     """
@@ -80,12 +77,11 @@ def update_todo_item_by_user(
     """
     Update a specific todo item owned by a user.
     This endpoint updates an existing todo item based on the provided data. If the todo item is not found or not owned by the user, it returns a 404 error.
-    Args:
-        user_id: The unique identifier of the user who owns the todo item.
-        todo_id: The unique identifier of the todo item to update.
-        todo_data: An instance of ToDoUpdate schema containing the updated data for the todo item.
-        db: A SQLAlchemy Session instance for database interaction.
 
+    Parameters: user_id: The unique identifier of the user who owns the todo item.
+    todo_id: The unique identifier of the todo item to update.
+    todo_data: An instance of ToDoUpdate schema containing the updated data for the todo item.
+    db: A SQLAlchemy Session instance for database interaction.
     Returns:
         The updated Todo item.
     """
@@ -97,18 +93,15 @@ def update_todo_item_by_user(
     return updated_todo_item
 
 
-@router.delete("/api/v1/users/{user_id}/todos/{todo_id}")
+@router.delete("/api/v1/users/{user_id}/todos/{todo_id}", status_code=204)
 def delete_todo_item_by_user(user_id: str, todo_id: str, db: Session = Depends(get_db)):
     """
     Delete a specific todo item owned by a user.
-
     This endpoint deletes a todo item specified by the todo ID and user ID. If the item is not found, it returns a 404 error.
 
-    Args:
-        user_id: The unique identifier of the user who owns the todo item.
-        todo_id: The unique identifier of the todo item to delete.
-        db: A SQLAlchemy Session instance for database interaction.
-
+    Parameters: user_id: The unique identifier of the user who owns the todo item.
+    todo_id: The unique identifier of the todo item to delete.
+    db: A SQLAlchemy Session instance for database interaction.
     Returns:
         A response indicating the todo item was successfully deleted.
     """
