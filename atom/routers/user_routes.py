@@ -71,7 +71,7 @@ def get_user(user_id: str, db: Session = Depends(get_db)):
     return user
 
 
-@router.put("/api/v1/users/{user_id}")
+@router.put("/api/v1/users/{user_id}", response_model=ShowUser)
 def update_user_by_id(
     user_id: str, user_update: UserUpdate, db: Session = Depends(get_db)
 ):

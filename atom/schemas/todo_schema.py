@@ -23,7 +23,6 @@ class ToDoShow(BaseModel):
     from the database.
     """
 
-    unique_id: str
     title: str
     completed: bool
     created_at: datetime

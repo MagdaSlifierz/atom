@@ -19,7 +19,7 @@ router = APIRouter()
 """
 
 
-@router.post("/api/v1/users/{user_id}/todos", status_code=201)
+@router.post("/api/v1/users/{user_id}/todos", status_code=201, response_model=ToDoShow)
 def create_todo_item_by_user(
     user_id: str, item_data: ToDoCreate, db: Session = Depends(get_db)
 ):
@@ -52,7 +52,7 @@ def read_user_todos_items(user_id: str, db: Session = Depends(get_db)):
     return get_all_todos_by_owner(user_id, db)
 
 
-@router.get("/api/v1/users/{user_id}/todos/{todo_id}")
+@router.get("/api/v1/users/{user_id}/todos/{todo_id}", response_model=ToDoShow)
 def read_item_todo_by_user(user_id: str, todo_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a specific todo item created by a user.
@@ -70,7 +70,7 @@ def read_item_todo_by_user(user_id: str, todo_id: str, db: Session = Depends(get
     return read_one_item
 
 
-@router.put("/api/v1/users/{user_id}/todos/{todo_id}", response_model=ToDoUpdate)
+@router.put("/api/v1/users/{user_id}/todos/{todo_id}", response_model=ToDoShow)
 def update_todo_item_by_user(
     user_id: str, todo_id: str, todo_data: ToDoUpdate, db: Session = Depends(get_db)
 ):
