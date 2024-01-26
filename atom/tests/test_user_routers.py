@@ -59,14 +59,15 @@ def test_create_user(test_app):
     """
 
     created_user_response = create_user(
-        test_app, "Karolina", "Pasieka", "kpasieka@gmail.com"
+        test_app, "Kasia", "Pasiekowska", "kasia@gmail.com"
     )
     assert created_user_response.status_code == 201
     # This line asserts that the first_name field in the JSON response matches the first name sent in the request
-    assert created_user_response.json()["first_name"] == "Karolina"
-    assert created_user_response.json()["last_name"] == "Pasieka"
-    assert created_user_response.json()["email"] == "kpasieka@gmail.com"
-
+    assert created_user_response.json()["first_name"] == "Kasia"
+    assert created_user_response.json()["last_name"] == "Pasiekowska"
+    assert created_user_response.json()["email"] == "kasia@gmail.com"
+    response_json = created_user_response.json()
+    print(response_json)
     # Extract the user_id from the created user response
     user_id = created_user_response.json()["unique_id"]
     # Delete the user

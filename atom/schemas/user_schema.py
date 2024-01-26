@@ -31,6 +31,7 @@ class ShowUser(BaseModel):
     facilitating the serialization and validation of data coming from the database
     """
 
+    unique_id: str
     first_name: str
     last_name: str
     email: EmailStr

@@ -68,7 +68,12 @@ def test_read_users_todo(test_app):
     """
 
     user_id, _ = create_user_and_todo(
-        test_app, "Paulina", "Powlikowska", "powlikowsa@gmail.com", "gardening", False
+        test_app,
+        "Paulina",
+        "Powlikowska",
+        "powlikowskq89@gmail.com",
+        "gardening",
+        False,
     )
 
     all_todos_response = test_app.get(f"/api/v1/users/{user_id}/todos")
@@ -87,7 +92,7 @@ def test_read_todo_item_by_user(test_app):
     3. verifies that the status code is 200 and that the response content matches the expected data format
     """
     user_id, todo_create = create_user_and_todo(
-        test_app, "Anna", "Kielich", "kiehghghh@gmail.com", "drinking a water", False
+        test_app, "Anna", "Kiel", "kielecka090@gmail.com", "drinking a water", False
     )
     assert todo_create.status_code == 201, "failed to create todo item"
     todo_created = todo_create.json()
@@ -108,7 +113,7 @@ def test_update_todo_item_by_user(test_app):
     The response status is verified to be 200 and at the end the user and todo item is being deleted
     """
     user_id, todo_response = create_user_and_todo(
-        test_app, "Danuta", "Polaczek", "dpolasczek909000@gmail.com", "cooking", False
+        test_app, "Danuta", "Polaczek", "dpolaczek990@gmail.com", "cooking", False
     )
     assert todo_response.status_code == 201, "Failed to create todo item"
 
@@ -149,7 +154,7 @@ def test_update_never_created_item_by_user(test_app):
     The user is successfully deleted
     """
     user_id, todo_response = create_user_and_todo(
-        test_app, "Danuta", "Pola", "dp0pssso@gmail.com", "cooking", False
+        test_app, "Danuta", "Nowicka", "dn87@gmail.com", "cooking", False
     )
     assert todo_response.status_code == 201, "Failed to create todo item"
 
@@ -188,7 +193,7 @@ def test_update_todo_item_by_wrong_user(test_app):
     The response status is verified to be "Expected a 404 Not Found response for non-existent todo item"
     """
     user_id, todo_response = create_user_and_todo(
-        test_app, "Danuta", "Pola", "lsls@gmail.com", "cooking", False
+        test_app, "Ola", "Dola", "dola78@gmail.com", "cooking", False
     )
     assert todo_response.status_code == 201, "Failed to create todo item"
 
@@ -220,7 +225,7 @@ def test_delete_todo_item_by_user(test_app):
     3. Verifying that the response status code is 204, indicating successful deletion.
     """
     user_id, todo_response = create_user_and_todo(
-        test_app, "Karol", "Wolowski", "wolowski123@gmail.com", "driving", False
+        test_app, "Oleg", "Pako", "pako89@gmail.com", "driving", False
     )
 
     # Assert for todo item creation
@@ -248,7 +253,7 @@ def test_delete_never_created_item_by_user(test_app):
     3. Verifying that the response status code is 404, "Failed to delete todo item".
     """
     user_id, todo_response = create_user_and_todo(
-        test_app, "Karol", "Wolowski", "wolowski@gmail.com", "driving", False
+        test_app, "Kasia", "Kisiel", "kisiel90@gmail.com", "driving", False
     )
 
     # Assert for todo item creation
@@ -279,7 +284,7 @@ def test_delete_todo_item_by_wrong_user(test_app):
     3. Verifying that the response status code is 404, "Failed to delete todo item".
     """
     user_id, todo_response = create_user_and_todo(
-        test_app, "Karol", "Wolkanowski", "wolkanowski@gmail.com", "driving", False
+        test_app, "Karol", "Piasek", "piasek00@gmail.com", "driving", False
     )
 
     # Assert for todo item creation

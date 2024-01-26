@@ -25,6 +25,7 @@ class ToDoShow(BaseModel):
 
     title: str
     completed: bool
+    unique_id: str
     created_at: datetime
     updated_at: datetime
 
