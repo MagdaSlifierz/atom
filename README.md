@@ -33,3 +33,24 @@ This section outlines the key technologies and frameworks utilized in developing
 
 ## Endpoints
 <img width="1438" alt="Screenshot 2024-02-06 at 4 15 59 PM" src="https://github.com/MagdaSlifierz/atom/assets/49603115/c5968346-0933-4ed9-9cd4-3f3b329cda5e">
+
+
+## Environment Setup with Poetry
+
+This project uses Poetry for dependency management. Make sure you have Poetry installed. If not, you can install it by following the instructions on the official Poetry documentation.
+
+After cloning the repository and navigating to the project directory, install the project dependencies with Poetry:
+
+```bash
+poetry install
+poetry shell
+
+
+## Running with Docker and Docker Compose**
+Ensure Docker and Docker Compose are installed on your system. To build and start the application using Docker Compose, run:
+
+```bash
+docker-compose up --build
+
+This command builds the Docker image as defined in Dockerfile, sets up the necessary services as configured in docker-compose.yml, and starts the application. This setup is ideal for development and production environments, ensuring consistency across different environments.
+
