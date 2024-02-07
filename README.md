@@ -24,7 +24,7 @@ Welcome to the Atom FastAPI application repository! This project is a RESTful we
 This section outlines the key technologies and frameworks utilized in developing the Atom FastAPI application. These tools were chosen for their reliability, efficiency, and support in building modern web applications.
 
 - **FastAPI** - The web framework used for building APIs. FastAPI is known for its high performance and ease of use for creating RESTful APIs.
-- **SQLAlchemy** - ![SQLAlchemy Logo](https://example.com/path/to/sqlalchemy_image.png "SQLAlchemy") The ORM (Object Relational Mapper) used for database interactions. SQLAlchemy provides a full suite of well-known enterprise-level persistence patterns.
+- **SQLAlchemy** - The ORM (Object Relational Mapper) used for database interactions. SQLAlchemy provides a full suite of well-known enterprise-level persistence patterns.
 - **Alembic** - Used for database migrations. Alembic allows for version-controlled schema changes and is tightly integrated with SQLAlchemy.
 - **Poetry** - Dependency management and packaging made easy. Poetry helps in managing project dependencies and packaging in a consistent, reproducible manner.
 - **Docker** - Containerization platform used to package the application and its dependencies into containers for easy deployment and scalability.
