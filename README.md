@@ -30,3 +30,6 @@ This section outlines the key technologies and frameworks utilized in developing
 - **Docker** - Containerization platform used to package the application and its dependencies into containers for easy deployment and scalability.
 - **Docker Compose** - A tool for defining and running multi-container Docker applications. It is used to manage the application services (e.g., web server, database) in development, testing, and production environments.
 - **GitHub Actions** - CI/CD platform used to automate the build, test, and deployment pipeline, enabling continuous integration and continuous deployment workflows for the project.
+
+## Endpoints
+<img width="1438" alt="Screenshot 2024-02-06 at 4 15 59 PM" src="https://github.com/MagdaSlifierz/atom/assets/49603115/c5968346-0933-4ed9-9cd4-3f3b329cda5e">
