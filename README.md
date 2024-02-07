@@ -45,12 +45,3 @@ After cloning the repository and navigating to the project directory, install th
 poetry install
 poetry shell
 
-
-## Running with Docker and Docker Compose**
-Ensure Docker and Docker Compose are installed on your system. To build and start the application using Docker Compose, run:
-
-```bash
-docker-compose up --build
-
-This command builds the Docker image as defined in Dockerfile, sets up the necessary services as configured in docker-compose.yml, and starts the application. This setup is ideal for development and production environments, ensuring consistency across different environments.
-
